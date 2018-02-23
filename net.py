@@ -117,8 +117,9 @@ def accuracy(outputs, labels):
 
 #adding F1 Score
 def f1_score(outputs, labels):
-
-
+    outputs = np.argmax(outputs, axis=1)
+    print(labels)
+    print(outputs)
     tags=set(labels)
     predicted=set(outputs)
 
