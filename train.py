@@ -124,8 +124,8 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
         val_acc = val_metrics['accuracy']
         val_f1s = val_metrics['f1_score']
         
-        is_best = val_f1s >= best_val_f1s
-        #is_best = val_acc>=best_val_acc
+        #is_best = val_f1s >= best_val_f1s
+        is_best = val_acc>=best_val_acc
 
         # Save weights
         utils.save_checkpoint({'epoch': epoch + 1,
@@ -136,7 +136,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
 
         # If best_eval, best_save_path
         if is_best:
-            logging.info("- Found new best f1 score")
+            logging.info("- Found new best accuracy")
             #best_val_acc = val_acc
             best_val_f1s = val_f1s
             # Save best val metrics in a json file in the model directory
