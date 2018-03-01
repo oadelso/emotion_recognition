@@ -33,8 +33,7 @@ class SIGNSDataset(Dataset):
         """
         self.filenames = os.listdir(data_dir)
         self.filenames = [os.path.join(data_dir, f) for f in self.filenames if f.endswith('.jpg')]
-
-        self.labels = [int(filename.split('/')[-1][0]) for filename in self.filenames]
+        self.labels = [int(filename.split('/')[-1].split('_')[0]) for filename in self.filenames]
         self.transform = transform
 
     def __len__(self):
