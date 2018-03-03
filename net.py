@@ -4,7 +4,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import csv
 
 outputs_print=[]
 labels_print=[]
@@ -116,22 +115,6 @@ def accuracy(outputs, labels):
     Returns: (float) accuracy in [0,1]
     """
     outputs = np.argmax(outputs, axis=1)
-    outputs_print.append(outputs)
-    outputs_p=np.asarray(outputs_print).reshape(-1)
-    labels_print.append(labels)
-    labels_p=np.asarray(labels_print).reshape(-1)
-    #saving output and labels - START
-    csvfile='/Users/oseasayerdi/Downloads/output_milestone.csv'
-    with open(csvfile, "w") as output:
-        writer = csv.writer(output, lineterminator='\n')
-        for val in outputs_p:
-            writer.writerow([val])
-    csvfile2='/Users/oseasayerdi/Downloads/labels_milestone.csv'
-    with open(csvfile2, "w") as output:
-        writer = csv.writer(output, lineterminator='\n')
-        for val in labels_p:
-            writer.writerow([val])
-    #saving output and labels - END
     return np.sum(outputs==labels)/float(labels.size)
 
 #adding F1 Score
