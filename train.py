@@ -3,6 +3,7 @@
 import argparse
 import logging
 import os
+import csv
 
 import numpy as np
 import torch
@@ -109,7 +110,8 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
         utils.load_checkpoint(restore_path, model, optimizer)
 
     best_val_acc = 0.0
-    best_val_f1s = 0.0
+
+    #best_f1_score =0.0
 
     for epoch in range(params.num_epochs):
         # Run one epoch
@@ -120,13 +122,11 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
 
         # Evaluate for one epoch on validation set
         val_metrics = evaluate(model, loss_fn, val_dataloader, metrics, params)
-        print(val_metrics)
         val_acc = val_metrics['accuracy']
-        val_f1s = val_metrics['f1_score']
+        #val_f1_score = val_metrics['f1_score']
         
-        #is_best = val_f1s >= best_val_f1s
         is_best = val_acc>=best_val_acc
-
+        #is_best = val_f1_score > best_f1_score
         # Save weights
         utils.save_checkpoint({'epoch': epoch + 1,
                                'state_dict': model.state_dict(),
@@ -137,15 +137,67 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
         # If best_eval, best_save_path
         if is_best:
             logging.info("- Found new best accuracy")
-            #best_val_acc = val_acc
-            best_val_f1s = val_f1s
+            best_val_acc = val_acc
+            #best_f1_score= val_f1_score
             # Save best val metrics in a json file in the model directory
             best_json_path = os.path.join(model_dir, "metrics_val_best_weights.json")
             utils.save_dict_to_json(val_metrics, best_json_path)
+            
+            labels_print=[]
+            outputs_print=[]
+            
+            #save best lables and outputs in order to perform error analysis
+            for data_batch, labels_batch in val_dataloader:
+                # move to GPU if available
+                if params.cuda:
+                    data_batch, labels_batch = data_batch.cuda(async=True), labels_batch.cuda(async=True)
+                # fetch the next evaluation batch
+                data_batch, labels_batch = Variable(data_batch), Variable(labels_batch)
+                # compute model output
+                output_batch = model(data_batch)
+        
+                # extract data from torch Variable, move to cpu, convert to numpy arrays
+                output_batch = output_batch.data.cpu().numpy()
+                labels_batch = labels_batch.data.cpu().numpy()
+                
+                #labels
+                labels_print.append(labels_batch)
+                labels_p=np.concatenate(labels_print)
+                #outputs
+                outputs_b = np.argmax(output_batch, axis=1)
+                outputs_print.append(outputs_b)
+                outputs_p=np.concatenate(outputs_print)
+            
+            csvfile1='labels_milestone1.csv'
+            with open(csvfile1, "w") as output:
+                writer = csv.writer(output, lineterminator='\n')
+                for val in labels_p:
+                    writer.writerow([val])
+                    
+            csvfile2='outputs_milestone1.csv'
+            with open(csvfile2, "w") as output:
+                writer = csv.writer(output, lineterminator='\n')
+                for val in outputs_p:
+                    writer.writerow([val])
+            
+            
 
         # Save latest val metrics in a json file in the model directory
         last_json_path = os.path.join(model_dir, "metrics_val_last_weights.json")
         utils.save_dict_to_json(val_metrics, last_json_path)
+
+#        #saving output and labels - START
+#        csvfile='output_milestone1.csv'
+#        with open(csvfile, "w") as output:
+#            writer = csv.writer(output, lineterminator='\n')
+#            for val in output_p:
+#                writer.writerow([val])
+#        csvfile2='labels_milestone1.csv'
+#        with open(csvfile2, "w") as output:
+#            writer = csv.writer(output, lineterminator='\n')
+#            for val in label_p:
+#                writer.writerow([val])
+#        #saving output and labels - END
 
 
 if __name__ == '__main__':
