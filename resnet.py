@@ -37,7 +37,8 @@ class Net(nn.Module):
         # For more details on how to use these layers, check out the documentation.
         self.conv1 = nn.Conv2d(3, self.num_channels, 3, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(self.num_channels)
-        #other convoluations needed for the residuals
+        
+        #other convolutions needed for the residuals
         self.conv1a = nn.Conv2d(self.num_channels, self.num_channels, 3, stride = 1, padding = 1)
         
         self.conv2 = nn.Conv2d(self.num_channels, self.num_channels*2, 3, stride=1, padding=1)
@@ -45,6 +46,7 @@ class Net(nn.Module):
         
         #other convoluations needed for the residuals
         self.conv2a = nn.Conv2d(self.num_channels*2, self.num_channels*2, 3, stride=1, padding=1)
+        
         self.conv3 = nn.Conv2d(self.num_channels*2, self.num_channels*4, 3, stride=1, padding=1)
         self.bn3 = nn.BatchNorm2d(self.num_channels*4)
         
