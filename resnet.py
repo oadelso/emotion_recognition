@@ -54,7 +54,7 @@ class Net(nn.Module):
         self.conv3a = nn.Conv2d(self.num_channels*4, self.num_channels*4, 3, stride=1, padding=1)
 
         # 2 fully connected layers to transform the output of the convolution layers to the final output
-        self.fc1 = nn.Linear(8*8*self.num_channels*4, self.num_channels*4)
+        self.fc1 = nn.Linear(8*8*self.num_channels*4*4, self.num_channels*4)
         self.fcbn1 = nn.BatchNorm1d(self.num_channels*4)
         self.fc2 = nn.Linear(self.num_channels*4, 11) #changing from 6 in order to fit our project        
         self.dropout_rate = params.dropout_rate
@@ -86,7 +86,7 @@ class Net(nn.Module):
         s = self.bn3(self.conv3a(s + residual_3)
         s = F.relu(F.max_pool2d(s, 2))                      # batch_size x num_channels*4 x 8 x 8
         # flatten the output for each image
-        s = s.view(-1, 8*8*self.num_channels*4)             # batch_size x 8*8*num_channels*4
+        s = s.view(-1, 8*8*self.num_channels*4*4)             # batch_size x 8*8*num_channels*4
 
         # apply 2 fully connected layers with dropout
         s = F.dropout(F.relu(self.fcbn1(self.fc1(s))), 
