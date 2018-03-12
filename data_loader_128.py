@@ -11,7 +11,7 @@ import torchvision.transforms as transforms
 train_transformer = transforms.Compose([
     #transforms.Resize(64),  # resize the image to 64x64 (remove if images are already 64x64)
     transforms.RandomHorizontalFlip(),  # randomly flip image horizontally
-    transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1) #edit the colors
+    transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1), #edit the colors
     transforms.ToTensor()])  # transform it into a torch tensor
 
 # loader for evaluation, no horizontal flip
