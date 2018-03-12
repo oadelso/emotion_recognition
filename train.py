@@ -168,13 +168,13 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
                 outputs_print.append(outputs_b)
                 outputs_p=np.concatenate(outputs_print)
             
-            csvfile1='labels_milestone1.csv'
+            csvfile1=os.path.join(model_dir,'labels.csv')
             with open(csvfile1, "w") as output:
                 writer = csv.writer(output, lineterminator='\n')
                 for val in labels_p:
                     writer.writerow([val])
                     
-            csvfile2='outputs_milestone1.csv'
+            csvfile2=os.path.join(model_dir,'outputs.csv')
             with open(csvfile2, "w") as output:
                 writer = csv.writer(output, lineterminator='\n')
                 for val in outputs_p:
@@ -185,19 +185,6 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer, loss_
         # Save latest val metrics in a json file in the model directory
         last_json_path = os.path.join(model_dir, "metrics_val_last_weights.json")
         utils.save_dict_to_json(val_metrics, last_json_path)
-
-#        #saving output and labels - START
-#        csvfile='output_milestone1.csv'
-#        with open(csvfile, "w") as output:
-#            writer = csv.writer(output, lineterminator='\n')
-#            for val in output_p:
-#                writer.writerow([val])
-#        csvfile2='labels_milestone1.csv'
-#        with open(csvfile2, "w") as output:
-#            writer = csv.writer(output, lineterminator='\n')
-#            for val in label_p:
-#                writer.writerow([val])
-#        #saving output and labels - END
 
 
 if __name__ == '__main__':
