@@ -30,7 +30,7 @@ class Net(nn.Module):
             params: (Params) contains num_channels
         """
         super(Net, self).__init__()
-        mult=3
+        mult=1
         self.num_channels = params.num_channels
         
         # each of the convolution layers below have the arguments (input_channels, output_channels, filter_size,
@@ -66,7 +66,7 @@ class Net(nn.Module):
             out: (Variable) dimension batch_size x 10 with the log probabilities for the labels of each image.
         Note: the dimensions after each step are provided
         """
-        mult=3                                                  #-> batch_size x 3 x 64 x 64
+        mult=1                                                  #-> batch_size x 3 x 64 x 64
         # we apply the convolution layers, followed by batch normalisation, maxpool and relu x 3
         s = self.bn1(self.conv1(s))                         # batch_size x num_channels x 64 x 64
         #print(np.shape(s))
@@ -98,7 +98,7 @@ class Net(nn.Module):
         
         # flatten the output for each image
         s = s.view(-1, 8*8*self.num_channels*3*mult*4)             # batch_size x 8*8*num_channels*4
-
+        #print(np.shape(s))
         # apply 2 fully connected layers with dropout
         s = F.dropout(F.relu(self.fcbn1(self.fc1(s))), 
             p=self.dropout_rate, training=self.training)    # batch_size x self.num_channels*4
