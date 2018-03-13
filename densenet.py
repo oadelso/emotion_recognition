@@ -90,7 +90,7 @@ class Net(nn.Module):
         residual_3 = F.max_pool2d(residual_3, 4)
         s = F.relu(F.max_pool2d(s + residual_2 + residual_3, 2))
         
-        #print(np.shape(s))
+        
         
         # flatten the output for each image
         s = s.view(-1, 8*8*self.num_channels*3*mult*4)             # batch_size x 8*8*num_channels*4
