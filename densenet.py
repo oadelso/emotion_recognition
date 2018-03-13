@@ -69,27 +69,31 @@ class Net(nn.Module):
         mult=3                                                  #-> batch_size x 3 x 64 x 64
         # we apply the convolution layers, followed by batch normalisation, maxpool and relu x 3
         s = self.bn1(self.conv1(s))                         # batch_size x num_channels x 64 x 64
+        #print(np.shape(s))
         s = F.relu(s)                      # batch_size x num_channels x 32 x 32
         residual = s
         residual_3 = residual
         s = self.bn2(self.conv2(s))                         # batch_size x num_channels*2 x 32 x 32
+        #print(np.shape(s))
         s = F.relu(F.max_pool2d(s, 2))                      # batch_size x num_channels*2 x 16 x 16
         residual_2 = s
         s = self.bn3(self.conv3(s))                         # batch_size x num_channels*4 x 16 x 16
-        
+        #print(np.shape(s))
         residual = self.bn4(self.conv4(residual))
+        #print(np.shape(residual))
         residual =F.max_pool2d(residual, 2)
         s = F.relu(F.max_pool2d(s + residual, 2))                      # batch_size x num_channels*4 x 8 x 8
 
         s = self.bn5(self.conv5(s))
-        
+        #print(np.shape(s))
         residual_2 = self.bn6(self.conv6(residual_2))
+        #print(np.shape(residual_2))
         residual_2 = F.max_pool2d(residual_2, 2)
     
         residual_3 = self.bn7(self.conv7(residual_3))
+        #print(np.shape(residual_3))
         residual_3 = F.max_pool2d(residual_3, 4)
         s = F.relu(F.max_pool2d(s + residual_2 + residual_3, 2))
-        
         
         
         # flatten the output for each image
