@@ -5,8 +5,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-outputs_print=[]
-labels_print=[]
 
 class Net(nn.Module):
     """
@@ -62,6 +60,7 @@ class Net(nn.Module):
         #inception
         self.conv1x1 = nn.Conv2d(self.num_channels*2*mult, self.num_channels*2, 1, stride =1, padding = 0)
         self.conv1x1b = nn.Conv2d(self.num_channels*2*mult, self.num_channels, 1, stride =1, padding = 0)
+        self.conv1x1c = nn.Conv2d(self.num_channels*2*mult, self.num_channels*2*mult, 1, stride =1, padding = 0)
         self.conv5x5 = nn.Conv2d(self.num_channels, self.num_channels, 5, stride = 1, padding = 2)
         self.conv3x3 = nn.Conv2d(self.num_channels, self.num_channels, 3, stride = 1, padding =1)
         self.conv12 = nn.Conv2d(self.num_channels*8, self.num_channels*4, 3, stride =1, padding =1 )
@@ -137,6 +136,7 @@ class Net(nn.Module):
         inception_2 = self.conv5x5(self.conv1x1b(s))
         inception_3 = self.conv3x3(self.conv1x1b(s))
         inception_4 = F.max_pool2d(s, 1)
+        inception_4 = self.conv1x1c(s)
         s = torch.cat((inception_1, inception_2, inception_3, inception_4), 1)
         s = self.conv12(s)
         
