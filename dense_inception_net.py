@@ -28,7 +28,7 @@ class Net(nn.Module):
             params: (Params) contains num_channels
         """
         super(Net, self).__init__()
-        mult=2
+        mult=3
         self.num_channels = params.num_channels
         
         # each of the convolution layers below have the arguments (input_channels, output_channels, filter_size,
@@ -81,7 +81,7 @@ class Net(nn.Module):
             out: (Variable) dimension batch_size x 10 with the log probabilities for the labels of each image.
         Note: the dimensions after each step are provided
         """
-        mult=2                                                  #-> batch_size x 3 x 64 x 64
+        mult=3                                                  #-> batch_size x 3 x 64 x 64
         # we apply the convolution layers, followed by batch normalisation, maxpool and relu x 3
         s = self.bn1(self.conv1(s))                         # batch_size x num_channels x 64 x 64
         #print(np.shape(s))
@@ -129,7 +129,7 @@ class Net(nn.Module):
         comb_residual = F.max_pool2d(residual_4 + residual_5 + residual_6, 2)
         s = F.relu(s + comb_residual)
         
-        print(np.shape(s))
+        #print(np.shape(s))
         
         #inception part
         inception_1 = self.conv1x1(s)
@@ -140,7 +140,7 @@ class Net(nn.Module):
         s = torch.cat((inception_1, inception_2, inception_3, inception_4), 1)
         s = self.conv12(s)
         
-        print(np.shape(s))
+        #print(np.shape(s))
         
         # flatten the output for each image
         s = s.view(-1, 8*8*self.num_channels*2*mult*4)             # batch_size x 8*8*num_channels*4
