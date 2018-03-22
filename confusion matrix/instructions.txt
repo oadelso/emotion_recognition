@@ -1,0 +1,1 @@
+When running an experiments, the code prints out in the experiments folder two csv files: outputs.csv and labels.csv for the validation dataset. These files can be copied in this folder and the code will plot the resulting confusion matrix.
