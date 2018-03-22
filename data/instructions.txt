@@ -1,2 +1,4 @@
-Download the full dataset in google drive:
-Link
+To get access to the AffectNet dataset, please fill the request form, found in the link below:
+
+http://mohammadmahoor.com/affectnet-request-form/
+
