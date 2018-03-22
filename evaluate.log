@@ -1,0 +1,8 @@
+2018-02-22 19:03:34,007:INFO: Creating the dataset...
+2018-02-22 19:03:34,010:INFO: - done.
+2018-02-22 19:03:34,024:INFO: Starting evaluation
+2018-02-22 19:03:34,686:INFO: - Eval metrics : accuracy: 0.924 ; loss: 0.374
+2018-03-07 12:05:59,229:INFO: Creating the dataset...
+2018-03-07 12:05:59,485:INFO: - done.
+2018-03-07 12:05:59,503:INFO: Starting evaluation
+2018-03-07 12:07:12,660:INFO: - Eval metrics : accuracy: 0.602 ; f1_score: 0.367 ; loss: 1.221
