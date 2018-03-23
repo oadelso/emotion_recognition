@@ -5,7 +5,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class Net(nn.Module):
     """
     This is the standard way to define your own network in PyTorch. You typically choose the components
@@ -61,13 +60,13 @@ class Net(nn.Module):
         self.conv1x1 = nn.Conv2d(self.num_channels*2*mult, self.num_channels*2, 1, stride =1, padding = 0)
         self.conv1x1b = nn.Conv2d(self.num_channels*2*mult, self.num_channels, 1, stride =1, padding = 0)
         self.conv1x1c = nn.Conv2d(self.num_channels*2*mult, self.num_channels*2*mult, 1, stride =1, padding = 0)
-        self.conv5x5 = nn.Conv2d(self.num_channels, self.num_channels, 5, stride = 1, padding = 2)
-        self.conv3x3 = nn.Conv2d(self.num_channels, self.num_channels, 3, stride = 1, padding =1)
-        self.conv12 = nn.Conv2d(self.num_channels*8, self.num_channels*4, 3, stride =1, padding =1 )
+        self.conv12 = nn.Conv2d(self.num_channels, self.num_channels, 5, stride = 1, padding = 2)
+        self.conv13 = nn.Conv2d(self.num_channels, self.num_channels, 3, stride = 1, padding =1)
+        self.conv15 = nn.Conv2d(self.num_channels*(2*mult + 4), self.num_channels*4, 3, stride =1, padding =1 )
         
         
         # 2 fully connected layers to transform the output of the convolution layers to the final output
-        self.fc1 = nn.Linear(8*8*self.num_channels*2*mult*4, self.num_channels*2*mult)
+        self.fc1 = nn.Linear(16*16*self.num_channels*2*4, self.num_channels*2*mult)
         self.fcbn1 = nn.BatchNorm1d(self.num_channels*2*mult)
         self.fc2 = nn.Linear(self.num_channels*2*mult, 11) #changing from 6 in order to fit our project        
         self.dropout_rate = params.dropout_rate
@@ -81,69 +80,75 @@ class Net(nn.Module):
             out: (Variable) dimension batch_size x 10 with the log probabilities for the labels of each image.
         Note: the dimensions after each step are provided
         """
-        mult=3                                                  #-> batch_size x 3 x 128 x 128
+        mult=3                                                  #-> batch_size x 3 x 64 x 64
         # we apply the convolution layers, followed by batch normalisation, maxpool and relu x 3
-        s = self.bn1(self.conv1(s))                             # batch_size x 32 x 128 x 128
-        #print(np.shape(s))
-        s = F.relu(s)                                           # batch_size x 32 x 128 x 128
+        s = self.bn1(self.conv1(s))                         # batch_size x num_channels x 64 x 64
+        print(np.shape(s))
+        s = F.relu(s)                      # batch_size x num_channels x 32 x 32
         residual = s
         residual_3 = s
         residual_4 = s
-        s = self.bn2(self.conv2(s))                             # batch_size x 96 x 128 x 128
-        #print(np.shape(s))
-        s = F.relu(F.max_pool2d(s, 2))                          # batch_size x 96 x 128 x 128
+        s = self.bn2(self.conv2(s))                         # batch_size x num_channels*2 x 32 x 32
+        print(np.shape(s))
+        s = F.relu(F.max_pool2d(s, 2))                      # batch_size x num_channels*2 x 16 x 16
         residual_2 = s
         residual_5 = s
-        s = self.bn3(self.conv3(s))                             #batch_size x 192 x 64 x 64
-        #print(np.shape(s))
+        s = self.bn3(self.conv3(s))                         # batch_size x num_channels*4 x 16 x 16
+        print(np.shape(s))
         residual = self.bn4(self.conv4(residual))
-        #print(np.shape(residual))
+        print(np.shape(residual))
         residual =F.max_pool2d(residual, 2)
-        s = F.relu(F.max_pool2d(s + residual, 2))                     
+        s = F.relu(F.max_pool2d(s + residual, 2))                      # batch_size x num_channels*4 x 8 x 8
         residual_6 = s
         
-        s = self.bn5(self.conv5(s))                              #batch_size x 288 x 32 x 32
-        #print(np.shape(s))
-        residual_2 = self.bn6(self.conv6(residual_2))            #batch_size x 288 x 64 x 64
-        #print(np.shape(residual_2))
-        residual_2 = F.max_pool2d(residual_2, 2)                 #batch_size x 288 x 32 x 32
+        s = self.bn5(self.conv5(s))
+        print(np.shape(s))
+        residual_2 = self.bn6(self.conv6(residual_2))
+        print(np.shape(residual_2))
+        residual_2 = F.max_pool2d(residual_2, 2)
     
-        residual_3 = self.bn7(self.conv7(residual_3))            #batch_size x 288 x 128 x 128
-        #print(np.shape(residual_3))
-        residual_3 = F.max_pool2d(residual_3, 4)                 #batch_size x 288 x 32 x 32
+        residual_3 = self.bn7(self.conv7(residual_3))
+        print(np.shape(residual_3))
+        residual_3 = F.max_pool2d(residual_3, 4)
         s = F.relu(F.max_pool2d(s + residual_2 + residual_3, 2))
         
         
         
-        s = self.bn8(self.conv8(s))                             #batch_size x 92 x 16 x 16
-        residual_4 = self.bn9(self.conv9(residual_4))           #batch_size x 192 x 128 x 128
+        s = self.bn8(self.conv8(s))
+        print(np.shape(s))
+        residual_4 = self.bn9(self.conv9(residual_4))
+        print(np.shape(residual_4))
         residual_4 = F.max_pool2d(residual_4, 4)
         #residual_4 = F.max_pool2d(residual_4, 2)
         
-        residual_5 = self.bn10(self.conv10(residual_5))        #batch_size x 192 x 64 x 64
+        residual_5 = self.bn10(self.conv10(residual_5))
+        print(np.shape(residual_5))
         residual_5 =F.max_pool2d(residual_5, 2)
         
-        residual_6 = self.bn11(self.conv11(residual_6))        #batch_size x 192 x 32 x 32
+        residual_6 = self.bn11(self.conv11(residual_6))
         #residual_6 =F.max_pool2d(residual_6, 2)
+        print(np.shape(residual_6))
         
         comb_residual = F.max_pool2d(residual_4 + residual_5 + residual_6, 2)
         s = F.relu(s + comb_residual)
         
-        #print(np.shape(s))
         
         #inception part
         inception_1 = self.conv1x1(s)
-        inception_2 = self.conv5x5(self.conv1x1b(s))
-        inception_3 = self.conv3x3(self.conv1x1b(s))
+        inception_2 = self.conv12(self.conv1x1b(s))
+        print(np.shape(inception_2))
+        inception_3 = self.conv13(self.conv1x1b(s))
+        print(np.shape(inception_3))
         inception_4 = F.max_pool2d(s, 1)
         inception_4 = self.conv1x1c(s)
         s = torch.cat((inception_1, inception_2, inception_3, inception_4), 1)
-        s = self.conv12(s)                                    #batch_size x 32 x 16 x 16
+        s = self.conv15(s)
+        print(np.shape(s))
         
         #print(np.shape(s))
         
         # flatten the output for each image
-        s = s.view(-1, 8*8*self.num_channels*2*mult*4)             # batch_size x 8*8*num_channels*4*mult
+        s = s.view(-1, 16*16*self.num_channels*2*4)             # batch_size x 8*8*num_channels*4
         #print(np.shape(s))
         
         # apply 2 fully connected layers with dropout
