@@ -5,9 +5,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-outputs_print=[]
-labels_print=[]
-
 class Net(nn.Module):
     """
     This is the standard way to define your own network in PyTorch. You typically choose the components
@@ -65,11 +62,11 @@ class Net(nn.Module):
         self.conv1x1c = nn.Conv2d(self.num_channels*2*mult, self.num_channels*2*mult, 1, stride =1, padding = 0)
         self.conv12 = nn.Conv2d(self.num_channels, self.num_channels, 5, stride = 1, padding = 2)
         self.conv13 = nn.Conv2d(self.num_channels, self.num_channels, 3, stride = 1, padding =1)
-        self.conv15 = nn.Conv2d(self.num_channels*8, self.num_channels*4, 3, stride =1, padding =1 )
+        self.conv15 = nn.Conv2d(self.num_channels*(2*mult + 4), self.num_channels*4, 3, stride =1, padding =1 )
         
         
         # 2 fully connected layers to transform the output of the convolution layers to the final output
-        self.fc1 = nn.Linear(8*8*self.num_channels*2*mult*4, self.num_channels*2*mult)
+        self.fc1 = nn.Linear(16*16*self.num_channels*2*4, self.num_channels*2*mult)
         self.fcbn1 = nn.BatchNorm1d(self.num_channels*2*mult)
         self.fc2 = nn.Linear(self.num_channels*2*mult, 11) #changing from 6 in order to fit our project        
         self.dropout_rate = params.dropout_rate
@@ -151,7 +148,7 @@ class Net(nn.Module):
         #print(np.shape(s))
         
         # flatten the output for each image
-        s = s.view(-1, 8*8*self.num_channels*2*mult*4)             # batch_size x 8*8*num_channels*4
+        s = s.view(-1, 16*16*self.num_channels*2*4)             # batch_size x 8*8*num_channels*4
         #print(np.shape(s))
         
         # apply 2 fully connected layers with dropout
